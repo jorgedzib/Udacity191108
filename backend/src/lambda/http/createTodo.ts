@@ -1,13 +1,20 @@
 
 import 'source-map-support/register'
 
-import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda'
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+
+import * as middy from 'middy'
+import { cors } from 'middy/middlewares'
 
 import { CreateTodoRequest } from '../../requests/CreateTodoRequest'
 import { createTodo } from '../../businessLogic/todos'
 import { getUserId } from '../utils';
 
-export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+
+
+export const handler = middy( 
+
+async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
 
   // TODO: Implement creating a new TODO item
   
@@ -16,18 +23,18 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
 
 
   const newItem = await createTodo(getUserId(event), newTodo)
- 
 
 return {
   statusCode: 200,
-  headers: {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Credentials': true,
-  },
 body: JSON.stringify({
-  newItem,
-  done: false 
+  item: newItem, 
 })
 }
 
-}
+})
+
+handler.use(
+  cors({
+    credentials: true
+  })
+)

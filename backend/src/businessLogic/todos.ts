@@ -4,7 +4,7 @@ import { TodosAccess } from '../dataLayer/todosAccess'
 import { TodoItem } from '../models/TodoItem'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
-
+//import { getUserId } from '../utils';
 
 const contentAccess = new TodosAccess()
 
@@ -12,23 +12,23 @@ const contentAccess = new TodosAccess()
 //for Create Todo
 
 export async function createTodo(userId: string, 
-  newTodo: CreateTodoRequest): Promise<TodoItem> {
+  CreateTodoRequest: CreateTodoRequest): Promise<TodoItem> {
     const timestamp = new Date().toISOString()
     const itemId = uuid.v4()
   
 
 
-  const newItem: TodoItem = {
+  const newTodo: TodoItem = {
     userId: userId,
     todoId: itemId,
     createdAt: timestamp,
-    ...newTodo,
+    ...CreateTodoRequest,
     done: false,
   }
 
-  await contentAccess.create(newItem)
+  await contentAccess.create(newTodo)
 
-  return newItem
+  return newTodo
   
   }
 

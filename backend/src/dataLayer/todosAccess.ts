@@ -2,9 +2,8 @@ import * as AWS from 'aws-sdk'
 import { TodoItem} from '../models/TodoItem'
 import { TodoUpdate } from '../models/TodoUpdate'
 
-//import { DocumentClient } from 'aws-sdk/clients/dynamodb'
-//import { createLogger } from '../utils/logger'
-//const logger = createLogger('TodosAccess')
+//import { docClient } from 'aws-sdk/clients/dynamodb'
+
 
 export class TodosAccess {
     constructor(
