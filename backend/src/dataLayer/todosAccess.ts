@@ -45,10 +45,10 @@ async getTodos(userId: string): Promise<TodoItem[]> {
 
 //for Update Todo
 
-async update(todoId: string, updateTodoRequest: TodoUpdate){
+async update(userId: string, todoId: string, updateTodoRequest: TodoUpdate){
  await this.docClient.update ({
     TableName: this.todosTable,
-    Key:{todoId : todoId },
+    Key:{userId, todoId},
     UpdateExpression: "set name = :n, dueDate=:d, done=:o",
     ExpressionAttributeValues:{
         
@@ -64,11 +64,12 @@ async update(todoId: string, updateTodoRequest: TodoUpdate){
 
 //for deleate todo
 
-async delete(todoId: string){
+async delete(userId: string, todoId: string){
   
    await this.docClient.delete({
     TableName: this.todosTable,
     Key: {
+      userId,
       todoId
     },
   }).promise()
@@ -76,7 +77,7 @@ async delete(todoId: string){
 
 //for Get with ID
 
-async getById(todoId: string): Promise<TodoItem> {
+async getById( todoId: string): Promise<TodoItem> {
  const result = await this.docClient.get({
   TableName: this.todosTable,
   Key: {

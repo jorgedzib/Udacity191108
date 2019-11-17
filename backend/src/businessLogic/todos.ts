@@ -48,11 +48,12 @@ export async function createTodo(userId: string,
 //for Update todo 
 
 export async function makeUpdate(
+  userId: string,
   todoId: string,
   updateTodoRequest: UpdateTodoRequest): Promise<void>
   {
 
-    return await contentAccess.update(todoId, updateTodoRequest)
+    return await contentAccess.update(userId, todoId, updateTodoRequest)
 
     }
 
@@ -61,9 +62,9 @@ export async function makeUpdate(
 
 
 
-export async function makeDelete(todoId: string){
+export async function makeDelete(userId: string, todoId: string){
 
-  return await contentAccess.delete(todoId)
+  return await contentAccess.delete(userId, todoId)
 
   
   }  
