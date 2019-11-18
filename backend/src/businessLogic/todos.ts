@@ -1,13 +1,14 @@
 import * as uuid  from 'uuid'
 
 import { TodosAccess } from '../dataLayer/todosAccess'
+import { UploadAccess } from '../dataLayer/storageAccess'
 import { TodoItem } from '../models/TodoItem'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
-//import { getUserId } from '../utils';
+import * as createError from 'http-errors'
 
 const contentAccess = new TodosAccess()
-
+const filesAccess = new UploadAccess() 
 
 //for Create Todo
 
@@ -52,6 +53,7 @@ export async function makeUpdate(
   todoId: string,
   updateTodoRequest: UpdateTodoRequest): Promise<void>
   {
+    await checkIfExists(userId, todoId)
 
     return await contentAccess.update(userId, todoId, updateTodoRequest)
 
@@ -69,3 +71,30 @@ export async function makeDelete(userId: string, todoId: string){
   
   }  
 
+//getbyId and error
+async function getById(userId: string, todoId: string): Promise<TodoItem> {
+  const todo = await contentAccess.getById(userId, todoId)
+  if (!todo) {
+    throw createError(404, JSON.stringify({
+      error: 'TODO not found'
+    }))
+  }
+
+  return todo
+}
+
+async function checkIfExists(userId: string, todoId: string) {
+  await getById(userId, todoId)
+}
+
+
+
+  //for S3
+
+
+  export async function createAttachment(todoId: string): Promise<string> {
+  
+    const presignedUrl = filesAccess.getUploadUrl(todoId)
+  
+    return presignedUrl
+  }

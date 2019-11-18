@@ -2,9 +2,6 @@ import * as AWS from 'aws-sdk'
 import { TodoItem} from '../models/TodoItem'
 import { TodoUpdate } from '../models/TodoUpdate'
 
-//import { docClient } from 'aws-sdk/clients/dynamodb'
-
-
 export class TodosAccess {
     constructor(
         private readonly docClient = new AWS.DynamoDB.DocumentClient(), 
@@ -27,8 +24,7 @@ async create(todo: TodoItem) {
 
 async getTodos(userId: string): Promise<TodoItem[]> {
 
-  const result = await this.docClient
-  .query({
+  const result = await this.docClient.query({
     TableName: this.todosTable,
     IndexName: this.createdAtIndex,
     KeyConditionExpression: 'userId = :userId',
@@ -49,15 +45,15 @@ async update(userId: string, todoId: string, updateTodoRequest: TodoUpdate){
  await this.docClient.update ({
     TableName: this.todosTable,
     Key:{userId, todoId},
-    UpdateExpression: "set name = :n, dueDate=:d, done=:o",
-    ExpressionAttributeValues:{
+    UpdateExpression: "SET #name = :n, dueDate=:d, done=:o",
+    ExpressionAttributeValues: {
         
         ":n": updateTodoRequest.name,
         ":d": updateTodoRequest.dueDate,
         ":o": updateTodoRequest.done
     },
     ExpressionAttributeNames: {
-      '#name': 'name'
+      '#name': 'n'
     }
   }).promise()
 }
@@ -77,10 +73,11 @@ async delete(userId: string, todoId: string){
 
 //for Get with ID
 
-async getById( todoId: string): Promise<TodoItem> {
+async getById(userId: string, todoId: string): Promise<TodoItem> {
  const result = await this.docClient.get({
   TableName: this.todosTable,
   Key: {
+    userId,
     todoId
   }
 }).promise()
@@ -90,6 +87,20 @@ return item as TodoItem
 }
 
 //for S3
+
+async setAttachmentUrl(userId: string, todoId: string, attachmentUrl: string) {
+  await this.docClient.update({
+    TableName: this.todosTable,
+    Key: {
+      userId,
+      todoId
+    },
+    UpdateExpression: 'SET attachmentUrl = :attachmentUrl',
+    ExpressionAttributeValues: {
+      ':attachmentUrl': attachmentUrl
+    }
+  }).promise()
+}
 
 
 }
