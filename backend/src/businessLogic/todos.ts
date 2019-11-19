@@ -92,9 +92,14 @@ async function checkIfExists(userId: string, todoId: string) {
   //for S3
 
 
-  export async function createAttachment(todoId: string): Promise<string> {
-  
+  export async function createAttachment(userId: string, todoId: string): Promise<string> {
+  const findTodo = await getById(userId, todoId)
+
     const presignedUrl = filesAccess.getUploadUrl(todoId)
   
+    if (!findTodo.attachmentUrl) {
+      await contentAccess.setAttachmentUrl(userId, todoId, filesAccess.findUrl(todoId))
+    }
+
     return presignedUrl
   }

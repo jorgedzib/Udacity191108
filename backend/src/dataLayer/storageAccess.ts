@@ -15,5 +15,11 @@ import * as AWS  from 'aws-sdk'
             })
           }
 
+          findUrl(todoId: string): string {
+            return `https://${this.bucketName}.s3.amazonaws.com/${todoId}`
+          }
+      
+
+
 }
 
